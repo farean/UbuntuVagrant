@@ -29,3 +29,12 @@ sudo service mongod stop
 sudo ex -sc '%s/bindIp: 127.0.0.1/bindIp: 0.0.0.0/g|x' /etc/mongod.conf
 sudo mkdir -p /data/db 
 sudo service mongod start
+
+echo "Installing Redis Server"
+sudo apt-get -y install redis-server
+
+echo "Changing configuration for IP in Redis Server"
+sudo service redis-server stop
+sudo ex -sc '%s/bind 127.0.0.1/bind 0.0.0.0/g|x' /etc/redis/redis.conf
+sudo service redis-server start
+
