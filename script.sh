@@ -38,3 +38,27 @@ sudo service redis-server stop
 sudo ex -sc '%s/bind 127.0.0.1/bind 0.0.0.0/g|x' /etc/redis/redis.conf
 sudo service redis-server start
 
+echo "Dynamodb : Installing"
+echo "Dynamodb : downloading bytes"
+sudo wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz
+if [ $? -ne 0 ]; then
+	echo "ERROR : Dynamodb is not installed"
+	exit 1
+fi
+
+echo "Dynamodb : Tarring file"
+tar xvzf dynamodb_local_latest.tar.gz
+
+echo "Dynamodb : removing bytes"
+rm dynamodb_local_latest.tar.gz
+
+echo "Dynamodb : searching Dynamodb into rc.local"
+sudo grep 'java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb' /etc/rc.local
+if [ $? -ne 0 ]; then
+     echo "Dynamodb : adding Dynamodb to rc.local"
+    sudo sed -i '13 a nohup java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb &' /etc/rc.local
+fi
+echo "Dynamodb : launching Dynamodb "
+sudo nohup java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb & 
+echo "Dynamodb : installed"
+
